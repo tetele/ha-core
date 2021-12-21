@@ -534,6 +534,8 @@ jobs:
           #   ${{ runner.os }}-${{ matrix.python-version }}-venv-${{ env.CACHE_VERSION }}-
       - name: Create full Python ${{ matrix.python-version }} virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
+        # setuptools is pinned because guppy3 triggers the following issue:
+        # https://github.com/pypa/setuptools/issues/2936
         run: |
           # Temporary addition of cmake, needed to build some Python 3.9 packages
           apt-get update
@@ -541,7 +543,7 @@ jobs:
 
           python -m venv venv
           . venv/bin/activate
-          pip install -U "pip<20.3" setuptools wheel
+          pip install -U "pip<20.3" "setuptools<59.7.0" wheel
           pip install -r requirements_all.txt
           pip install -r requirements_test.txt
           pip install -e .
